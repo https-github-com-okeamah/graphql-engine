@@ -9,6 +9,7 @@ use indexmap::IndexMap;
 use lang_graphql::ast::common as ast;
 use open_dds::{data_connector::DataConnectorName, models::ModelName, types::CustomTypeName};
 
+use crate::configuration::Configuration;
 use crate::stages::{
     boolean_expressions, data_connector_scalar_types, graphql_config, models,
     object_boolean_expressions, relationships,
@@ -21,6 +22,8 @@ pub use types::{
     ModelExpressionType, ModelGraphQlApi, ModelOrderByExpression, SelectAggregateGraphQlDefinition,
     SelectManyGraphQlDefinition, SelectUniqueGraphQlDefinition,
 };
+
+use super::order_by_expressions;
 
 pub fn resolve(
     metadata_accessor: &open_dds::accessor::MetadataAccessor,
@@ -35,8 +38,10 @@ pub fn resolve(
         object_boolean_expressions::ObjectBooleanExpressionType,
     >,
     boolean_expression_types: &boolean_expressions::BooleanExpressionTypes,
+    order_by_expressions: &order_by_expressions::OrderByExpressions,
     existing_graphql_types: &BTreeSet<ast::TypeName>,
     graphql_config: &graphql_config::GraphqlConfig,
+    configuration: &Configuration,
 ) -> Result<types::ModelsWithGraphql, Error> {
     let mut models_with_graphql = types::ModelsWithGraphql::new();
 
@@ -78,7 +83,9 @@ pub fn resolve(
                 data_connector_scalars,
                 &model.raw.description,
                 &model.aggregate_expression,
+                order_by_expressions,
                 graphql_config,
+                configuration,
             )?,
             None => types::ModelGraphQlApi::default(),
         };
