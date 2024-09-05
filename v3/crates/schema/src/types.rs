@@ -15,7 +15,7 @@ use open_dds::{
     commands,
     data_connector::{DataConnectorColumnName, DataConnectorName, DataConnectorOperatorName},
     models,
-    types::{self, DataConnectorArgumentName},
+    types::{self, DataConnectorArgumentName, Deprecated},
 };
 
 use metadata_resolve::{
@@ -96,7 +96,7 @@ pub enum ModelFilterArgument {
         object_type: Qualified<types::CustomTypeName>,
         object_field_kind: ObjectFieldKind,
         /// To mark a field as deprecated in the field usage while reporting query usage analytics.
-        deprecated: bool,
+        deprecated: Option<Deprecated>,
     },
     RelationshipField(FilterRelationshipAnnotation),
 }
@@ -189,7 +189,7 @@ pub enum OutputAnnotation {
         parent_type: Qualified<types::CustomTypeName>,
         argument_types: BTreeMap<ast::Name, QualifiedTypeReference>,
         /// To mark a field as deprecated in the field usage while reporting query usage analytics.
-        deprecated: bool,
+        deprecated: Option<Deprecated>,
     },
     GlobalIDField {
         /// The `global_id_fields` are required to calculate the
@@ -240,7 +240,7 @@ pub enum ModelInputAnnotation {
         parent_type: Qualified<types::CustomTypeName>,
         ndc_column: DataConnectorColumnName,
         /// To mark a field as deprecated in the field usage while reporting query usage analytics.
-        deprecated: bool,
+        deprecated: Option<Deprecated>,
     },
     ModelOrderByRelationshipArgument(OrderByRelationshipAnnotation),
 
@@ -284,7 +284,7 @@ pub enum InputAnnotation {
         field_type: QualifiedTypeReference,
         parent_type: Qualified<types::CustomTypeName>,
         /// To mark a field as deprecated in the field usage while reporting query usage analytics.
-        deprecated: bool,
+        deprecated: Option<Deprecated>,
     },
     BooleanExpression(BooleanExpressionAnnotation),
     CommandArgument {
@@ -384,6 +384,9 @@ pub enum TypeId {
     MutationRoot {
         graphql_type_name: ast::TypeName,
     },
+    SubscriptionRoot {
+        graphql_type_name: ast::TypeName,
+    },
     OutputType {
         gds_type_name: Qualified<types::CustomTypeName>,
         graphql_type_name: ast::TypeName,
@@ -452,6 +455,7 @@ impl TypeId {
         match self {
             TypeId::QueryRoot { graphql_type_name }
             | TypeId::MutationRoot { graphql_type_name }
+            | TypeId::SubscriptionRoot { graphql_type_name }
             | TypeId::OutputType {
                 graphql_type_name, ..
             }

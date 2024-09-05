@@ -1,6 +1,7 @@
 use hasura_authn_core::Role;
 use lang_graphql::ast::common as ast;
 use lang_graphql::schema::{self as gql_schema};
+use open_dds::types::Deprecated;
 use open_dds::{
     relationships::RelationshipType,
     types::{CustomTypeName, FieldName},
@@ -12,10 +13,10 @@ use super::types::output_type::relationship::FilterRelationshipAnnotation;
 use super::types::{BooleanExpressionAnnotation, InputAnnotation, ObjectFieldKind, TypeId};
 use metadata_resolve::{
     mk_name, BooleanExpressionComparableRelationship, ComparisonExpressionInfo,
-    IncludeLogicalOperators, ModelExpressionType, ModelWithPermissions,
+    GlobalGraphqlConfig, IncludeLogicalOperators, ModelExpressionType, ModelWithPermissions,
     ObjectBooleanExpressionType, ObjectComparisonExpressionInfo, ObjectComparisonKind,
-    ObjectTypeWithRelationships, Qualified, RelationshipField, RelationshipModelMapping,
-    ResolvedObjectBooleanExpressionType,
+    ObjectTypeWithRelationships, Qualified, RelationshipCapabilities, RelationshipField,
+    RelationshipModelMapping, ResolvedObjectBooleanExpressionType,
 };
 
 use crate::permissions;
@@ -173,7 +174,7 @@ fn build_comparable_fields_schema(
                     field_name: field_name.clone(),
                     object_field_kind: ObjectFieldKind::Scalar,
                     object_type: object_type_name.clone(),
-                    deprecated: field_definition.is_deprecated(),
+                    deprecated: field_definition.deprecated.clone(),
                 },
             },
         ));
@@ -239,7 +240,7 @@ fn build_comparable_fields_schema(
                         ObjectComparisonKind::Array => ObjectFieldKind::Array,
                     },
                     object_type: object_type_name.clone(),
-                    deprecated: field_definition.is_deprecated(),
+                    deprecated: field_definition.deprecated.clone(),
                 },
             },
         ));
@@ -289,91 +290,91 @@ fn build_new_comparable_relationships_schema(
                 relationship_name: comparable_relationship.relationship_name.clone(),
             })?;
 
-        // generate relationship input field only if relationship capability is present
-        if let Some(relationship_capability) = &relationship.target_capabilities {
-            // generate relationship input field only if relationship comparison capability is
-            // present
-            if relationship_capability.relationship_comparison {
-                // we haven't thought about Command relationship targets yet
-                if let metadata_resolve::RelationshipTarget::Model(
-                    metadata_resolve::ModelRelationshipTarget {
-                        model_name,
-                        relationship_type,
-                        target_typename: _,
-                        mappings,
-                    },
-                ) = &relationship.target
-                {
-                    // lookup target model for relationship
-                    let target_model = gds.metadata.models.get(model_name).ok_or_else(|| {
-                        Error::InternalModelNotFound {
-                            model_name: model_name.clone(),
-                        }
-                    })?;
+        // Check whether the relationship is allowed to be compared
+        if !include_relationship_field(
+            relationship.target_capabilities.as_ref(),
+            &gds.metadata.graphql_config,
+        ) {
+            continue;
+        }
 
-                    // if we have specified a boolean expression type to use for this relationship, look it up
-                    // (if none is specified, we use whichever is specified on the model)
-                    let target_boolean_expression_graphql_type = match &comparable_relationship
-                        .boolean_expression_type
-                    {
-                        Some(target_boolean_expression_type_name) => {
-                            let target_boolean_expression = gds
-                                .metadata
-                                .boolean_expression_types
-                                .objects
-                                .get(target_boolean_expression_type_name)
-                                .ok_or_else(|| Error::InternalBooleanExpressionNotFound {
-                                    type_name: target_boolean_expression_type_name.clone(),
-                                })?;
-
-                            // if we find a type, make sure it's added to the schema
-                            if let Some(graphql) = &target_boolean_expression.graphql {
-                                let _registered_type_name = builder.register_type(
-                                    TypeId::InputObjectBooleanExpressionType {
-                                        graphql_type_name: graphql.type_name.clone(),
-                                        gds_type_name: target_boolean_expression_type_name.clone(),
-                                    },
-                                );
-                            }
-                            // return type name
-                            target_boolean_expression
-                                .graphql
-                                .as_ref()
-                                .map(|graphql| graphql.type_name.clone())
-                        }
-                        None => {
-                            // no specific type is provided by the relationship, so
-                            // lookup filter expression graphql for target model
-                            filter_graphql_type_for_model(target_model)
-                        }
-                    };
-
-                    // lookup type underlying target model
-                    let target_object_type_representation =
-                        get_object_type_representation(gds, &target_model.model.data_type)?;
-
-                    // if our target model has a boolean expression type to use, and a source,
-                    if let (Some(target_boolean_expression_graphql_type), Some(target_source)) = (
-                        target_boolean_expression_graphql_type,
-                        &target_model.model.source,
-                    ) {
-                        // create a new input field
-                        let (name, schema) = build_model_relationship_schema(
-                            object_type_representation,
-                            target_object_type_representation,
-                            &target_boolean_expression_graphql_type,
-                            target_model,
-                            target_source,
-                            relationship,
-                            relationship_type,
-                            mappings,
-                            gds,
-                            builder,
-                        )?;
-
-                        input_fields.insert(name, schema);
-                    }
+        // we haven't thought about Command relationship targets yet
+        if let metadata_resolve::RelationshipTarget::Model(
+            metadata_resolve::ModelRelationshipTarget {
+                model_name,
+                relationship_type,
+                target_typename: _,
+                mappings,
+            },
+        ) = &relationship.target
+        {
+            // lookup target model for relationship
+            let target_model = gds.metadata.models.get(model_name).ok_or_else(|| {
+                Error::InternalModelNotFound {
+                    model_name: model_name.clone(),
                 }
+            })?;
+
+            // if we have specified a boolean expression type to use for this relationship, look it up
+            // (if none is specified, we use whichever is specified on the model)
+            let target_boolean_expression_graphql_type =
+                match &comparable_relationship.boolean_expression_type {
+                    Some(target_boolean_expression_type_name) => {
+                        let target_boolean_expression = gds
+                            .metadata
+                            .boolean_expression_types
+                            .objects
+                            .get(target_boolean_expression_type_name)
+                            .ok_or_else(|| Error::InternalBooleanExpressionNotFound {
+                                type_name: target_boolean_expression_type_name.clone(),
+                            })?;
+
+                        // if we find a type, make sure it's added to the schema
+                        if let Some(graphql) = &target_boolean_expression.graphql {
+                            let _registered_type_name =
+                                builder.register_type(TypeId::InputObjectBooleanExpressionType {
+                                    graphql_type_name: graphql.type_name.clone(),
+                                    gds_type_name: target_boolean_expression_type_name.clone(),
+                                });
+                        }
+                        // return type name
+                        target_boolean_expression
+                            .graphql
+                            .as_ref()
+                            .map(|graphql| graphql.type_name.clone())
+                    }
+                    None => {
+                        // no specific type is provided by the relationship, so
+                        // lookup filter expression graphql for target model
+                        filter_graphql_type_for_model(target_model)
+                    }
+                };
+
+            // lookup type underlying target model
+            let target_object_type_representation =
+                get_object_type_representation(gds, &target_model.model.data_type)?;
+
+            // if our target model has a boolean expression type to use, and a source,
+            if let (Some(target_boolean_expression_graphql_type), Some(target_source)) = (
+                target_boolean_expression_graphql_type,
+                &target_model.model.source,
+            ) {
+                // create a new input field
+                let (name, schema) = build_model_relationship_schema(
+                    object_type_representation,
+                    target_object_type_representation,
+                    &target_boolean_expression_graphql_type,
+                    target_model,
+                    target_source,
+                    relationship,
+                    relationship_type,
+                    mappings,
+                    &relationship.deprecated,
+                    gds,
+                    builder,
+                )?;
+
+                input_fields.insert(name, schema);
             }
         }
     }
@@ -419,61 +420,63 @@ fn build_comparable_relationships_schema(
             },
         ) = &relationship.target
         {
-            // generate relationship input field only if relationship capability is present
-            if let Some(relationship_capability) = &relationship.target_capabilities {
-                // generate relationship input field only if relationship comparison capability is
-                // present
-                if relationship_capability.relationship_comparison {
-                    // lookup target model for relationship
-                    let target_model = gds.metadata.models.get(model_name).ok_or_else(|| {
-                        Error::InternalModelNotFound {
-                            model_name: model_name.clone(),
-                        }
-                    })?;
+            // Check whether the relationship is allowed to be compared
+            if !include_relationship_field(
+                relationship.target_capabilities.as_ref(),
+                &gds.metadata.graphql_config,
+            ) {
+                continue;
+            }
 
-                    // lookup type underlying target model
-                    let target_object_type_representation =
-                        get_object_type_representation(gds, &target_model.model.data_type)?;
-
-                    // lookup filter expression graphql for target model
-                    let target_boolean_expression_graphql_type =
-                        match &target_model.filter_expression_type {
-                            None => None,
-                            Some(ModelExpressionType::BooleanExpressionType(
-                                target_boolean_expression_type,
-                            )) => target_boolean_expression_type
-                                .graphql
-                                .as_ref()
-                                .map(|graphql| graphql.type_name.clone()),
-                            Some(ModelExpressionType::ObjectBooleanExpressionType(
-                                target_model_filter_expression,
-                            )) => target_model_filter_expression
-                                .graphql
-                                .as_ref()
-                                .map(|graphql| graphql.type_name.clone()),
-                        };
-
-                    // if our target model has a boolean expression type to use, and a source,
-                    if let (Some(target_boolean_expression_graphql_type), Some(target_source)) = (
-                        target_boolean_expression_graphql_type,
-                        &target_model.model.source,
-                    ) {
-                        // add an input field for the relationship
-                        let (name, schema) = build_model_relationship_schema(
-                            object_type_representation,
-                            target_object_type_representation,
-                            &target_boolean_expression_graphql_type,
-                            target_model,
-                            target_source,
-                            relationship,
-                            relationship_type,
-                            mappings,
-                            gds,
-                            builder,
-                        )?;
-                        input_fields.insert(name, schema);
-                    }
+            // lookup target model for relationship
+            let target_model = gds.metadata.models.get(model_name).ok_or_else(|| {
+                Error::InternalModelNotFound {
+                    model_name: model_name.clone(),
                 }
+            })?;
+
+            // lookup type underlying target model
+            let target_object_type_representation =
+                get_object_type_representation(gds, &target_model.model.data_type)?;
+
+            // lookup filter expression graphql for target model
+            let target_boolean_expression_graphql_type = match &target_model.filter_expression_type
+            {
+                None => None,
+                Some(ModelExpressionType::BooleanExpressionType(
+                    target_boolean_expression_type,
+                )) => target_boolean_expression_type
+                    .graphql
+                    .as_ref()
+                    .map(|graphql| graphql.type_name.clone()),
+                Some(ModelExpressionType::ObjectBooleanExpressionType(
+                    target_model_filter_expression,
+                )) => target_model_filter_expression
+                    .graphql
+                    .as_ref()
+                    .map(|graphql| graphql.type_name.clone()),
+            };
+
+            // if our target model has a boolean expression type to use, and a source,
+            if let (Some(target_boolean_expression_graphql_type), Some(target_source)) = (
+                target_boolean_expression_graphql_type,
+                &target_model.model.source,
+            ) {
+                // add an input field for the relationship
+                let (name, schema) = build_model_relationship_schema(
+                    object_type_representation,
+                    target_object_type_representation,
+                    &target_boolean_expression_graphql_type,
+                    target_model,
+                    target_source,
+                    relationship,
+                    relationship_type,
+                    mappings,
+                    &relationship.deprecated,
+                    gds,
+                    builder,
+                )?;
+                input_fields.insert(name, schema);
             }
         }
     }
@@ -495,6 +498,7 @@ fn build_model_relationship_schema(
     relationship: &RelationshipField,
     relationship_type: &RelationshipType,
     relationship_model_mappings: &[RelationshipModelMapping],
+    relationship_deprecated: &Option<Deprecated>,
     gds: &GDS,
     builder: &mut gql_schema::Builder<GDS>,
 ) -> Result<InputField, Error> {
@@ -511,6 +515,7 @@ fn build_model_relationship_schema(
         target_model_name: target_model.model.name.clone(),
         relationship_type: relationship_type.clone(),
         mappings: relationship_model_mappings.to_vec(),
+        deprecated: relationship_deprecated.clone(),
     };
 
     let namespace_annotations = permissions::get_model_relationship_namespace_annotations(
@@ -662,4 +667,14 @@ fn get_scalar_comparison_input_type(
             is_null_operator_name: comparison_expression.is_null_operator_name.clone(),
         }),
     )
+}
+
+fn include_relationship_field(
+    target_capabilities: Option<&RelationshipCapabilities>,
+    global_graphql_config: &GlobalGraphqlConfig,
+) -> bool {
+    // Include relationship if bypassing  relation_comparison NDC capability is set to true
+    global_graphql_config.bypass_relation_comparisons_ndc_capability
+        // Else, check for NDC capability
+        || target_capabilities.is_some_and(|capabilities| capabilities.relationship_comparison)
 }
