@@ -13,7 +13,7 @@ execnet==1.9.0
 graphene==2.1.9
 graphql-core==2.3.2
 graphql-relay==2.0.1
-idna==3.4
+idna==3.7
 iniconfig==2.0.0
 jsondiff==2.0.0
 packaging==23.0
