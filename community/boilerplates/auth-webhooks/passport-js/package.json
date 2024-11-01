@@ -23,7 +23,7 @@
   "dependencies": {
     "bcrypt": "^3.0.0",
     "body-parser": "^1.18.3",
-    "chalk": "^2.4.1",
+    "chalk": "^5.3.0",
     "crypto": "^1.0.1",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
