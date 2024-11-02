@@ -33,7 +33,7 @@
     "graphql": "^14.5.8",
     "inflection": "^1.12.0",
     "node-fetch": "^2.6.0",
-    "regenerator-runtime": "^0.13.3"
+    "regenerator-runtime": "^0.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
