@@ -5,7 +5,7 @@
   "author": "Hasura, Inc.",
   "license": "ISC",
   "dependencies": {
-    "apollo-server": "3.8.1",
+    "apollo-server": "3.13.0",
     "@apollo/gateway": "2.9.3",
     "graphql": "16.8.1",
     "graphql-tag": "2.10.1",
