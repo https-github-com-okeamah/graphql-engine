@@ -120,7 +120,7 @@
     "oas-validator": "^5.0.8",
     "piping": "0.3.2",
     "pluralize": "^8.0.0",
-    "posthog-js": "^1.4.3",
+    "posthog-js": "^1.261.6",
     "pretty-error": "1.2.0",
     "prop-types": "15.7.2",
     "query-string": "6.11.1",
