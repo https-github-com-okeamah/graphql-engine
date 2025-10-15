@@ -19962,7 +19962,7 @@ __metadata:
     react-dom: 17.0.2
     react-flame-graph: ^1.4.0
     react-helmet: 5.2.1
-    react-hook-form: 7.15.4
+    react-hook-form: 7.63.0
     react-hot-loader: 4.13.0
     react-hot-toast: 2.4.0
     react-icons: ^4.8.0
@@ -30842,12 +30842,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:7.15.4":
-  version: 7.15.4
-  resolution: "react-hook-form@npm:7.15.4"
+"react-hook-form@npm:7.63.0":
+  version: 7.63.0
+  resolution: "react-hook-form@npm:7.63.0"
   peerDependencies:
-    react: ^16.8.0 || ^17
-  checksum: b9dc6b552a5913e237f5d773e28fb9921dd27c1446a93efc6cdb7ffe3bf20f3c54f978a221d8ae1b96ec2022e82ca532526f791510da17eb933a5b8acf247cfa
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: 7194e8c4be1d7e618765b603bd4ab7b8bb44ada24d1d8395fbe4c8bf9daf012485396a4629cf1c25d71ffb618762fb0689e31f9f389109963a082aaf182784c0
   languageName: node
   linkType: hard
 
