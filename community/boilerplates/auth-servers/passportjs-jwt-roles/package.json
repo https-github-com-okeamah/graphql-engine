@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/platyplus/authentication-server",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.3",
     "body-parser": "^2.0.1",
     "chalk": "^2.4.1",
     "cors": "^2.8.5",
