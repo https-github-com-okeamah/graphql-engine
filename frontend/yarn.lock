@@ -7456,6 +7456,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry-internal/tracing@npm:7.120.4":
+  version: 7.120.4
+  resolution: "@sentry-internal/tracing@npm:7.120.4"
+  dependencies:
+    "@sentry/core": 7.120.4
+    "@sentry/types": 7.120.4
+    "@sentry/utils": 7.120.4
+  checksum: 247c087a0100e6ac68bfbdb3308905aebe1230dc0e99b14d0cedf12d55378c173d4482f20e5f112f8e6f75561c48b204bb083302a9d1d81116e786e02deb6633
+  languageName: node
+  linkType: hard
+
 "@sentry/browser@npm:7.11.1":
   version: 7.11.1
   resolution: "@sentry/browser@npm:7.11.1"
@@ -7477,6 +7488,16 @@ __metadata:
     "@sentry/utils": 7.11.1
     tslib: ^1.9.3
   checksum: 4e3fa11d248182a6cdce87ff60111cd29fe028fb84abed7f362f3d7b1a6db9b97bf6bf07317f2338fce01b331a1e867a34e3ef477134b859270ef0d0f48bdc8e
+  languageName: node
+  linkType: hard
+
+"@sentry/core@npm:7.120.4":
+  version: 7.120.4
+  resolution: "@sentry/core@npm:7.120.4"
+  dependencies:
+    "@sentry/types": 7.120.4
+    "@sentry/utils": 7.120.4
+  checksum: c5d24064c9a2fae34bd13038a20b1ffe04d9a66693d1cfa5a5d25491911e5aebfd5b107433edd081ad845b07da2e384fd8e39ebf46e56f4f49a5717956f5bae6
   languageName: node
   linkType: hard
 
@@ -7506,15 +7527,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/tracing@npm:7.11.1":
-  version: 7.11.1
-  resolution: "@sentry/tracing@npm:7.11.1"
+"@sentry/tracing@npm:7.120.4":
+  version: 7.120.4
+  resolution: "@sentry/tracing@npm:7.120.4"
   dependencies:
-    "@sentry/hub": 7.11.1
-    "@sentry/types": 7.11.1
-    "@sentry/utils": 7.11.1
-    tslib: ^1.9.3
-  checksum: c0c4b540eff30deb94b939d7792f765410bd0abb3c495a49cd89c1ed113f0ca46fb7b12bdc777ddb42f64018a5647afe69bb444d77a2e0cb8a8ae9ed813a7f7b
+    "@sentry-internal/tracing": 7.120.4
+  checksum: 09cae9abeafc6e9173039aed86be152ab3d0563303c34a4e07e6a9d963172a6af53cbe45630c32170897d03753454b314aaa24d410e08493d788d69bae2b9744
   languageName: node
   linkType: hard
 
@@ -7525,6 +7543,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/types@npm:7.120.4":
+  version: 7.120.4
+  resolution: "@sentry/types@npm:7.120.4"
+  checksum: 33bcd3d489511915827f32d6d509fd50479a80bffbbe195545ed27c82d606658ae66c01ec6494a087503505454adb8b0d7a8c0adb5228b6d45a6ffec3b708dcc
+  languageName: node
+  linkType: hard
+
 "@sentry/utils@npm:7.11.1":
   version: 7.11.1
   resolution: "@sentry/utils@npm:7.11.1"
@@ -7532,6 +7557,15 @@ __metadata:
     "@sentry/types": 7.11.1
     tslib: ^1.9.3
   checksum: e0a1d8528e9f99a35c88786cc230a5466966a59554796bbf13a33aa8956911c8bce7c556bb7a90ba20c9af9fa64ef6b87b956d1d8bae6ff42950ce4125c3b44e
+  languageName: node
+  linkType: hard
+
+"@sentry/utils@npm:7.120.4":
+  version: 7.120.4
+  resolution: "@sentry/utils@npm:7.120.4"
+  dependencies:
+    "@sentry/types": 7.120.4
+  checksum: f02f3b54ec226c02ad2f037ecff73de3631d7b1b06ff55bcfa400545ecbf0f57903f6766684a5d88870d6ceb4dfa87dbb17072f1090cb484924c505fb751d4da
   languageName: node
   linkType: hard
 
@@ -19733,7 +19767,7 @@ __metadata:
     "@readme/openapi-parser": ^2.5.0
     "@reduxjs/toolkit": ^1.5.1
     "@sentry/react": 7.11.1
-    "@sentry/tracing": 7.11.1
+    "@sentry/tracing": 7.120.4
     "@storybook/addon-a11y": ^7.0.9
     "@storybook/addon-actions": 7.0.7
     "@storybook/addon-docs": 7.0.7
