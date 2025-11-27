@@ -56,7 +56,7 @@
     "@readme/openapi-parser": "^2.5.0",
     "@reduxjs/toolkit": "^1.5.1",
     "@sentry/react": "7.11.1",
-    "@sentry/tracing": "7.11.1",
+    "@sentry/tracing": "7.120.4",
     "@swc/helpers": "^0.5.1",
     "@tanstack/react-table": "8.5.13",
     "@types/react-color": "^3.0.6",
