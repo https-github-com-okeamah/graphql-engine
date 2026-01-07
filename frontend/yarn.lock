@@ -7456,27 +7456,61 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/browser@npm:7.11.1":
-  version: 7.11.1
-  resolution: "@sentry/browser@npm:7.11.1"
+"@sentry-internal/browser-utils@npm:10.31.0":
+  version: 10.31.0
+  resolution: "@sentry-internal/browser-utils@npm:10.31.0"
   dependencies:
-    "@sentry/core": 7.11.1
-    "@sentry/types": 7.11.1
-    "@sentry/utils": 7.11.1
-    tslib: ^1.9.3
-  checksum: 819683c4186b837400785ad15aad7056427e8a3539d0c25c363f06ee54044bfd26c5dee8303fd5d1e5b12e18c93d0d3239f84e8e6bffde133d615e63177f7b29
+    "@sentry/core": 10.31.0
+  checksum: 7747ba4ab28d8256ed3f194ff9e31abf77fd196d702f0d2bd2038eaf0b59801340d923007b888521672e3ee01c484952467f7248a630c7185a2547e5b287e083
   languageName: node
   linkType: hard
 
-"@sentry/core@npm:7.11.1":
-  version: 7.11.1
-  resolution: "@sentry/core@npm:7.11.1"
+"@sentry-internal/feedback@npm:10.31.0":
+  version: 10.31.0
+  resolution: "@sentry-internal/feedback@npm:10.31.0"
   dependencies:
-    "@sentry/hub": 7.11.1
-    "@sentry/types": 7.11.1
-    "@sentry/utils": 7.11.1
-    tslib: ^1.9.3
-  checksum: 4e3fa11d248182a6cdce87ff60111cd29fe028fb84abed7f362f3d7b1a6db9b97bf6bf07317f2338fce01b331a1e867a34e3ef477134b859270ef0d0f48bdc8e
+    "@sentry/core": 10.31.0
+  checksum: bc7a641549a48b4defa872f151c486cf72055124646b440fd2cb9beed77893840e2973c79171e083aaa44f9e0cd7cbd5526d234ac145d386a958e536ace3da7d
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/replay-canvas@npm:10.31.0":
+  version: 10.31.0
+  resolution: "@sentry-internal/replay-canvas@npm:10.31.0"
+  dependencies:
+    "@sentry-internal/replay": 10.31.0
+    "@sentry/core": 10.31.0
+  checksum: 544660c16158a8d929853149cde2a05b2a685502865b49e6c6ca382c5529d9f999a6a30f772a3ceb42871f436d3bcc5186ec1784f807b16dff0a4f5f17f579c8
+  languageName: node
+  linkType: hard
+
+"@sentry-internal/replay@npm:10.31.0":
+  version: 10.31.0
+  resolution: "@sentry-internal/replay@npm:10.31.0"
+  dependencies:
+    "@sentry-internal/browser-utils": 10.31.0
+    "@sentry/core": 10.31.0
+  checksum: fec42cd14f3c4feea75c06a1f9e15d6f266570a4f5c0f2224cfdae38a1a9e59c4a258925bdd71836f320d1a6c80dce376b589f5b962c9d59a73bae03c5ae2246
+  languageName: node
+  linkType: hard
+
+"@sentry/browser@npm:10.31.0":
+  version: 10.31.0
+  resolution: "@sentry/browser@npm:10.31.0"
+  dependencies:
+    "@sentry-internal/browser-utils": 10.31.0
+    "@sentry-internal/feedback": 10.31.0
+    "@sentry-internal/replay": 10.31.0
+    "@sentry-internal/replay-canvas": 10.31.0
+    "@sentry/core": 10.31.0
+  checksum: 82278a5652917e5951aa57b93e47c691ccbde7e5444beca54fea9b85e1f8be3e49ab5c4f9b1b31a164967a7405ecf613a6d502fe15c96123d419624dd3e8392c
+  languageName: node
+  linkType: hard
+
+"@sentry/core@npm:10.31.0":
+  version: 10.31.0
+  resolution: "@sentry/core@npm:10.31.0"
+  checksum: 3cd2543b3f300a1a8fbce6710ea8a7e6c574d69307309cbc6e61d9dffe7ec5c7ba4012eedcd8c0d8af9863e37b4134adae864cbc07c0f0e858bfa25236929e2c
   languageName: node
   linkType: hard
 
@@ -7491,18 +7525,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/react@npm:7.11.1":
-  version: 7.11.1
-  resolution: "@sentry/react@npm:7.11.1"
+"@sentry/react@npm:10.31.0":
+  version: 10.31.0
+  resolution: "@sentry/react@npm:10.31.0"
   dependencies:
-    "@sentry/browser": 7.11.1
-    "@sentry/types": 7.11.1
-    "@sentry/utils": 7.11.1
+    "@sentry/browser": 10.31.0
+    "@sentry/core": 10.31.0
     hoist-non-react-statics: ^3.3.2
-    tslib: ^1.9.3
   peerDependencies:
-    react: 15.x || 16.x || 17.x || 18.x
-  checksum: d340fb522ba732b22eec42dd9180167e4189b9c132728284b787cc714f916bc53490d76dad9cdc47ecee83ea02460ab4122428d4f1e14f1dbcd1fc3b79a53d73
+    react: ^16.14.0 || 17.x || 18.x || 19.x
+  checksum: 9ada684f982c22d323bbada7d9c7caee8626b2d2135a9e2b92011d35a391d70171d6319290ca53e957faccf14e20c640943f4a3133083e424dd8748c701917ec
   languageName: node
   linkType: hard
 
@@ -19732,7 +19764,7 @@ __metadata:
     "@radix-ui/react-tooltip": ^1.0.5
     "@readme/openapi-parser": ^2.5.0
     "@reduxjs/toolkit": ^1.5.1
-    "@sentry/react": 7.11.1
+    "@sentry/react": 10.31.0
     "@sentry/tracing": 7.11.1
     "@storybook/addon-a11y": ^7.0.9
     "@storybook/addon-actions": 7.0.7
