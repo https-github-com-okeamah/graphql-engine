@@ -124,7 +124,7 @@
     "pretty-error": "1.2.0",
     "prop-types": "15.7.2",
     "query-string": "6.11.1",
-    "react": "17.0.2",
+    "react": "19.2.3",
     "react-ace": "8.0.0",
     "react-apollo": "^3.0.1",
     "react-arborist": "^3.0.2",
